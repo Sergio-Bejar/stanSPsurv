@@ -30,7 +30,7 @@ transformed parameters {
 model {
   beta ~ normal(0, 2.5); gamma ~ normal(0, 2.5);
   shape ~ lognormal(0, 0.5); sigma_u ~ normal(0, 1);
-  if (structure_type == 1) u_raw ~ std_normal();
+  if (structure_type <= 1) u_raw ~ std_normal();
   if (structure_type == 2) {
     for (e in 1:N_edges) target += -0.5 * square(u_raw[node1[e]] - u_raw[node2[e]]);
     sum(u_raw) ~ normal(0, 0.001 * J);
@@ -55,4 +55,3 @@ generated quantities {
       log_lik[n] = log_sum_exp(log1m(pi), log(pi) + log_survival(time[n], eta, shape, baseline));
   }
 }
-
