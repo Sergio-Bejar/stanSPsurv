@@ -9,9 +9,12 @@ split-population survival models fitted with Stan. It provides a common API
 for pooled, exchangeable-frailty, and spatial CAR specifications with
 Weibull or log-logistic event-time distributions.
 
-> **Validation status:** the package architecture and candidate likelihood are
-> implemented, but numerical recovery, comparison with `BayesSPsurv`, and a
-> complete `R CMD check` remain required before substantive use.
+> **Validation status:** all six candidate specifications compile and complete
+> short simulation runs without divergences, and `R CMD check --no-manual`
+> passes with `Status: OK`. The spatial smoke tests reached maximum tree depth
+> in 4/600 (Weibull) and 6/600 (log-logistic) transitions. Larger simulation
+> studies and comparison with `BayesSPsurv` remain required before substantive
+> use.
 
 ## Installation
 
@@ -49,7 +52,17 @@ coef(fit, component = "survival")
 
 Each supports `form = "weibull"` or `form = "loglogistic"`.
 
+## Reproducible validation
+
+Run the six-model smoke/recovery study from the repository root:
+
+```sh
+Rscript validation/run_models.R
+```
+
+The concise results are stored in `validation/results.csv`; raw CmdStan output
+is intentionally excluded from version control.
+
 ## Authors
 
 Sergio Béjar (first author and maintainer) and Bumba Mukherjee (coauthor).
-
