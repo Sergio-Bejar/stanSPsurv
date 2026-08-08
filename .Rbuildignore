@@ -1,0 +1,10 @@
+^\.r-lib$
+^\.cmdstan$
+^\.git$
+^\.gitignore$
+^validation/output$
+^stanSPsurv_.*\.tar\.gz$
+^stanSPsurv\.Rcheck$
+^inst/stan/spsurv$
+^AGENTS\.md$
+
