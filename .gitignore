@@ -12,4 +12,9 @@ stan/*.csv
 check/
 revdep/
 docs/
+.r-lib/
+.cmdstan/
+inst/stan/spsurv
+validation/output/
+stanSPsurv_*.tar.gz
 
