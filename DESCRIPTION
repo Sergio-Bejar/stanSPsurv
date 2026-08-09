@@ -1,7 +1,7 @@
 Package: stanSPsurv
 Type: Package
 Title: Bayesian Split-Population Survival Models with Stan
-Version: 0.0.1.9000
+Version: 0.0.2.9000
 Authors@R: c(
     person("Sergio", "Béjar", email = "28761799+Sergio-Bejar@users.noreply.github.com",
            role = c("aut", "cre")),
