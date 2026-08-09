@@ -17,4 +17,7 @@ docs/
 inst/stan/spsurv
 validation/output/
 stanSPsurv_*.tar.gz
-
+analysis/vdem/data-raw/
+analysis/vdem/output/*.rds
+analysis/vdem/output/fits/
+analysis/vdem/output/cmdstan/
