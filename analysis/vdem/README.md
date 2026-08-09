@@ -40,6 +40,14 @@ run (`output/pooled_weibull_summary.csv` and
 `output/pooled_weibull_diagnostics.csv`). All four chains had R-hat at 1.00,
 zero divergences, zero maximum-treedepth transitions, and adequate E-BFMI.
 
+The exchangeable run also had zero divergences and zero maximum-treedepth
+transitions, but `sigma_w` had R-hat 1.02 and needs additional sampling. The
+first spatial run is deliberately retained as a failed diagnostic: it produced
+99/4,000 divergences and 3,858/4,000 maximum-treedepth transitions, with R-hat
+up to 1.80. Its coefficients must not be interpreted substantively; the dual
+intrinsic-CAR parameterization needs revision before this application can be
+claimed as a successful spatial fit.
+
 The spatial graph is a symmetric four-nearest-neighbour graph based on
 country-polygon centroids from the `maps` package. It is a reproducible
 geographic-proximity graph, not a historical border-contiguity matrix. That
