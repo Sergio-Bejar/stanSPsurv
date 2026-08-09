@@ -1,3 +1,4 @@
+/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 #' @export
 print.stanSPsurv <- function(x, ...) {
   cat("stanSPsurv fit\n", "  structure: ", x$structure,
@@ -7,7 +8,10 @@ print.stanSPsurv <- function(x, ...) {
 
 #' @export
 summary.stanSPsurv <- function(object, ...) {
-  object$fit$summary(variables = c("beta", "gamma", "shape", "sigma_v", "sigma_w"))
+  variables <- c("beta", "gamma", "shape")
+  if (object$structure != "pooled") variables <- c(variables, "sigma_v", "sigma_w")
+  if (object$structure == "spatial") variables <- c(variables, "phi_v", "phi_w")
+  object$fit$summary(variables = variables)
 }
 
 #' @export
