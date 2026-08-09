@@ -16,6 +16,13 @@ Weibull or log-logistic event-time distributions.
 > studies and comparison with `BayesSPsurv` remain required before substantive
 > use.
 
+> **Walter benchmark:** the real-data pooled Weibull run produced 394/2,000
+> divergences and the exchangeable run produced 542/2,000. The official 800 km
+> graph contains 16 isolated countries, and the spatial smoke run stalled after
+> entering sampling. These results identify a package-level parameterization
+> problem; do not interpret real-data spatial estimates yet. See
+> [`validation/walter`](validation/walter).
+
 ## Installation
 
 The package is currently private and under active development. It requires R
