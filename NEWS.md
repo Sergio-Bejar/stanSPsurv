@@ -1,4 +1,18 @@
-# stanSPsurv 0.0.1.9000
+/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
+# stanSPsurv 0.0.3.9000
+
+- Split the pooled, exchangeable, and spatial implementations into separate
+  Stan programs so inactive frailty parameters are never sampled.
+- Corrected counting-process likelihoods to mix susceptible and immune
+  populations once per episode through the new `spell` argument.
+- Reparameterized positive scales on the log scale and added regularizing
+  priors for weakly identified split-population models.
+- Replaced the unscaled dual ICAR with a scaled BYM2 formulation that handles
+  disconnected components and isolated areas.
+- Re-ran the Walter (2015) benchmark: pooled, exchangeable, and spatial models
+  completed with zero divergences and zero maximum-treedepth transitions.
+
+# stanSPsurv 0.0.2.9000
 
 - Added a reproducible V-Dem 16 / ERT 16 application for democratic-breakdown
   spells, including a geographic-proximity graph and ready-to-run pooled,
