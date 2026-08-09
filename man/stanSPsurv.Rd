@@ -19,7 +19,8 @@ stan_spatial_spsurv(formula, split_formula, data, area, adjacency,
 }
 \arguments{
   \item{formula}{Survival-stage formula with a right-censored
-  \code{survival::Surv(time, event)} response.}
+  \code{survival::Surv(time, event)} or
+  \code{survival::Surv(t0, time, event)} response.}
   \item{split_formula}{Formula for the latent susceptibility probability.}
   \item{data}{A data frame.}
   \item{form}{The event-time distribution.}
@@ -29,4 +30,3 @@ stan_spatial_spsurv(formula, split_formula, data, area, adjacency,
   \item{...}{Sampling arguments passed to CmdStan.}
 }
 \value{An object of class \code{stanSPsurv}.}
-
