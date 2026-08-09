@@ -68,6 +68,13 @@ Rscript validation/run_models.R
 The concise results are stored in `validation/results.csv`; raw CmdStan output
 is intentionally excluded from version control.
 
+## Political-science application
+
+A reproducible V-Dem 16 / ERT 16 pipeline for democratic-breakdown spells is
+in [`analysis/vdem`](analysis/vdem). It prepares pooled, country-frailty, and
+spatial-proximity specifications while keeping raw source data and fitted
+objects out of version control.
+
 ## Authors
 
 Sergio Béjar (first author and maintainer) and Bumba Mukherjee (coauthor).
