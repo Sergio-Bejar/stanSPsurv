@@ -2,8 +2,8 @@ prepare_spsurv_data <- function(formula, split_formula, data, group = NULL,
                                 adjacency = NULL) {
   mf_y <- stats::model.frame(formula, data = data, na.action = stats::na.pass)
   y <- stats::model.response(mf_y)
-  if (!inherits(y, "Surv") || ncol(y) != 2L)
-    stop("formula must have a right-censored Surv(time, event) response.", call. = FALSE)
+  if (!inherits(y, "Surv") || !ncol(y) %in% c(2L, 3L))
+    stop("formula must use Surv(time, event) or Surv(t0, time, event).", call. = FALSE)
   mf_z <- stats::model.frame(split_formula, data = data, na.action = stats::na.pass)
   keep <- stats::complete.cases(mf_y, mf_z)
   if (!is.null(group)) keep <- keep & !is.na(group)
@@ -15,7 +15,13 @@ prepare_spsurv_data <- function(formula, split_formula, data, group = NULL,
   }
   X <- stats::model.matrix(stats::terms(mf_y), mf_y)
   Z <- stats::model.matrix(stats::terms(mf_z), mf_z)
-  if (any(y[, 1] <= 0)) stop("All event/censoring times must be positive.", call. = FALSE)
+  if (ncol(y) == 2L) {
+    t0 <- rep(0, nrow(y)); time <- y[, 1]; event <- y[, 2]
+  } else {
+    t0 <- y[, 1]; time <- y[, 2]; event <- y[, 3]
+  }
+  if (any(t0 < 0) || any(time <= t0))
+    stop("Intervals must satisfy 0 <= t0 < time.", call. = FALSE)
   if (qr(X)$rank < ncol(X) || qr(Z)$rank < ncol(Z))
     stop("Design matrices must be full rank.", call. = FALSE)
   if (is.null(group)) {
@@ -25,7 +31,7 @@ prepare_spsurv_data <- function(formula, split_formula, data, group = NULL,
   }
   edges <- adjacency_edges(adjacency)
   list(stan_data = list(N = nrow(X), K = ncol(X), Q = ncol(Z),
-       time = as.vector(y[, 1]), event = as.integer(y[, 2]), X = X, Z = Z,
+       t0 = as.vector(t0), time = as.vector(time), event = as.integer(event), X = X, Z = Z,
        J = J, group_id = group_id, N_edges = length(edges$node1),
        node1 = edges$node1, node2 = edges$node2),
        terms = stats::terms(mf_y), split_terms = stats::terms(mf_z),
@@ -45,4 +51,3 @@ adjacency_edges <- function(A) {
   idx <- which(upper.tri(A) & A == 1, arr.ind = TRUE)
   list(node1 = as.integer(idx[, 1]), node2 = as.integer(idx[, 2]))
 }
-
