@@ -7,7 +7,7 @@ print.stanSPsurv <- function(x, ...) {
 
 #' @export
 summary.stanSPsurv <- function(object, ...) {
-  object$fit$summary(variables = c("beta", "gamma", "shape", "sigma_u"))
+  object$fit$summary(variables = c("beta", "gamma", "shape", "sigma_v", "sigma_w"))
 }
 
 #' @export
@@ -21,11 +21,14 @@ coef.stanSPsurv <- function(object, component = c("survival", "split"), ...) {
 #' @param object A fitted `stanSPsurv` object.
 #' @param ... Reserved for extensions.
 #' @export
-frailty <- function(object, ...) {
+frailty <- function(object, stage = c("survival", "split"), ...) {
   if (!inherits(object, "stanSPsurv")) stop("object must be a stanSPsurv fit.", call. = FALSE)
   if (object$structure == "pooled") return(data.frame())
-  ans <- object$fit$summary(variables = "u")
+  stage <- match.arg(stage)
+  variable <- if (stage == "survival") "w" else "v"
+  ans <- object$fit$summary(variables = variable)
   ans$group <- object$group_levels
+  ans$stage <- stage
   ans
 }
 
@@ -52,4 +55,3 @@ predict.stanSPsurv <- function(object, newdata = NULL,
   }, numeric(nrow(X)))
   if (length(times) == 1L) drop(out) else out
 }
-
