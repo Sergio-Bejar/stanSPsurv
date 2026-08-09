@@ -47,7 +47,8 @@ simulate_case <- function(structure, baseline, N = 180L, J = 6L) {
   edges <- which(upper.tri(A) & A == 1, arr.ind = TRUE)
   list(
     data = list(N = N, K = ncol(X), Q = ncol(Z), time = time,
-      event = event, X = X, Z = Z, J = if (structure == "pooled") 1L else J,
+      t0 = rep(0, N), event = event, X = X, Z = Z,
+      J = if (structure == "pooled") 1L else J,
       group_id = if (structure == "pooled") rep(1L, N) else group_id,
       N_edges = if (structure == "spatial") nrow(edges) else 0L,
       node1 = if (structure == "spatial") as.integer(edges[, 1]) else integer(),
@@ -82,7 +83,7 @@ for (i in seq_len(nrow(cases))) {
     adapt_delta = 0.90, max_treedepth = 11,
     output_dir = case_dir
   )
-  sm <- fit$summary(variables = c("beta", "gamma", "shape", "sigma_u"))
+  sm <- fit$summary(variables = c("beta", "gamma", "shape", "sigma_v", "sigma_w"))
   diag <- fit$diagnostic_summary()
   wanted <- c("beta[1]", "beta[2]", "gamma[1]", "gamma[2]", "shape")
   est <- sm$mean[match(wanted, sm$variable)]
