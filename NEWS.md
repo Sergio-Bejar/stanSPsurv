@@ -1,5 +1,11 @@
 # stanSPsurv 0.0.1.9000
 
+- Added a reproducible V-Dem 16 / ERT 16 application for democratic-breakdown
+  spells, including a geographic-proximity graph and ready-to-run pooled,
+  exchangeable, and spatial specifications.
+- Recorded the first full pooled Weibull application run and its sampler
+  diagnostics.
+
 - Created the initial R package structure.
 - Added candidate pooled, exchangeable, and spatial split-population survival models.
 - Added Weibull and log-logistic baselines through a shared Stan backend.
