@@ -11,8 +11,8 @@ Weibull or log-logistic event-time distributions.
 
 > **Validation status:** all six candidate specifications compile and complete
 > short simulation runs without divergences, and `R CMD check --no-manual`
-> passes with `Status: OK`. The spatial smoke tests reached maximum tree depth
-> in 4/600 (Weibull) and 6/600 (log-logistic) transitions. Larger simulation
+> passes with `Status: OK`. The dual-CAR spatial smoke tests reached maximum
+> tree depth in 32/600 (Weibull) and 119/600 (log-logistic) transitions. Larger simulation
 > studies and comparison with `BayesSPsurv` remain required before substantive
 > use.
 
@@ -51,6 +51,11 @@ coef(fit, component = "survival")
 - `stan_spatial_spsurv()`
 
 Each supports `form = "weibull"` or `form = "loglogistic"`.
+
+Both `Surv(time, event)` and counting-process
+`Surv(t0, time, event)` responses are supported. Exchangeable and spatial
+models estimate separate frailties for the split and survival stages; use
+`frailty(fit, stage = "split")` or `frailty(fit, stage = "survival")`.
 
 ## Reproducible validation
 
