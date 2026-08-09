@@ -1,3 +1,4 @@
+/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 # stanSPsurv
 
 <p align="center">
@@ -6,7 +7,7 @@
 
 `stanSPsurv` is a development-stage R package for Bayesian
 split-population survival models fitted with Stan. It provides a common API
-for pooled, exchangeable-frailty, and spatial CAR specifications with
+for pooled, exchangeable-frailty, and spatial BYM2 specifications with
 Weibull or log-logistic event-time distributions.
 
 > **Validation status:** all six candidate specifications compile and complete
@@ -16,12 +17,11 @@ Weibull or log-logistic event-time distributions.
 > studies and comparison with `BayesSPsurv` remain required before substantive
 > use.
 
-> **Walter benchmark:** the real-data pooled Weibull run produced 394/2,000
-> divergences and the exchangeable run produced 542/2,000. The official 800 km
-> graph contains 16 isolated countries, and the spatial smoke run stalled after
-> entering sampling. These results identify a package-level parameterization
-> problem; do not interpret real-data spatial estimates yet. See
-> [`validation/walter`](validation/walter).
+> **Walter benchmark:** after introducing episode-level mixtures, separate Stan
+> programs, log-scale variance parameters, and BYM2, the pooled, exchangeable,
+> and official 800 km spatial runs completed with zero divergences and zero
+> maximum-treedepth transitions. The spatial run remains slow and substantive
+> validation is still required. See [`validation/walter`](validation/walter).
 
 ## Installation
 
@@ -60,7 +60,9 @@ coef(fit, component = "survival")
 Each supports `form = "weibull"` or `form = "loglogistic"`.
 
 Both `Surv(time, event)` and counting-process
-`Surv(t0, time, event)` responses are supported. Exchangeable and spatial
+`Surv(t0, time, event)` responses are supported. Counting-process models require
+the `spell` argument and evaluate latent susceptibility once per episode.
+Exchangeable and spatial
 models estimate separate frailties for the split and survival stages; use
 `frailty(fit, stage = "split")` or `frailty(fit, stage = "survival")`.
 
