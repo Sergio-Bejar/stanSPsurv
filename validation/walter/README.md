@@ -3,34 +3,28 @@
 
 This benchmark reproduces the data preparation and model formula documented by
 `BayesSPsurv` for Barbara Walter's post-war peace data. The input has 1,237
-country-years, 61 conflict spells, 46 countries, and 24 recurrent-war events.
+country-years, 77 survival spells, 46 countries, and 24 recurrent-war events.
 The published 800 km capital-distance graph has 27 undirected edges and 16
 isolated countries.
 
 The Stan runs use four chains, `adapt_delta = 0.97`, and
 `max_treedepth = 13`. Pooled and exchangeable runs contain 500 warm-up and 500
-sampling iterations per chain. The spatial diagnostic was shortened to 250 +
-250 and stopped after all chains entered sampling but failed to complete the
-next 50-iteration reporting block within several minutes.
+sampling iterations per chain. The spatial diagnostic uses 250 warm-up and 250
+sampling iterations per chain.
 
 ## Results
 
 | Specification | Divergences | Max treedepth | R-hat | Assessment |
 |---|---:|---:|---:|---|
-| Pooled Weibull | 394/2,000 | 0 | <= 1.01 | Failed: divergent geometry without CAR |
-| Exchangeable Weibull | 542/2,000 | 0 | <= 1.01 | Failed: frailties worsen divergences |
-| Spatial, official 800 km | not completed | stalled | not available | Failed computational smoke test |
+| Pooled Weibull | 0/2,000 | 0 | <= 1.01 | Passed; 12 seconds |
+| Exchangeable Weibull | 0/2,000 | 0 | <= 1.01 | Passed; 31 seconds |
+| Spatial BYM2, official 800 km | 0/1,000 | 0 | <= 1.01 | Passed; 841 seconds |
 
-The pooled failure establishes that Walter-specific spatial adjacency is not
-the root cause. In the current Stan program, `sigma_v`, `sigma_w`, `v_raw`, and
-`w_raw` are sampled even for the pooled model although they do not enter its
-likelihood. The constrained scale parameters can create boundary geometry with
-no compensating information. For spatial models, the dual unscaled ICAR and
-the 16 isolated nodes add further identification problems.
-
-Before interpreting Walter coefficients, the package should use
-structure-specific Stan programs (or conditionally sized parameter blocks), a
-non-centered exchangeable parameterization with regularizing priors, and a
-scaled BYM2 component-aware spatial prior. The benchmark should then be rerun
-against the original `BayesSPsurv` estimates.
-
+The original implementation produced 394/2,000 pooled divergences and
+542/2,000 exchangeable divergences; its spatial smoke test stalled. The repair
+uses structure-specific Stan programs, an episode-level mixture likelihood,
+log-scale and non-centered frailty parameters, regularizing priors, centered
+Walter predictors, and a component-aware BYM2 prior. These changes remove the
+observed geometric failures. The BYM2 implementation is still computationally
+expensive and its substantive estimates must be compared with the original
+`BayesSPsurv` implementation before publication.
