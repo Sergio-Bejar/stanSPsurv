@@ -45,6 +45,7 @@ model {
   theta_v ~ std_normal(); theta_w ~ std_normal();
   log_sigma_v ~ normal(-1, 0.7); log_sigma_w ~ normal(-1, 0.7);
   logit_phi_v ~ normal(-1, 1); logit_phi_w ~ normal(-1, 1);
+  // A weak ridge makes every graph component proper, including isolates.
   psi_v ~ normal(0, 1); psi_w ~ normal(0, 1);
   for (e in 1:N_edges) {
     target += -0.5 * square(psi_v[node1[e]] - psi_v[node2[e]]);
