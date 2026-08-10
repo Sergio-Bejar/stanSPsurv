@@ -7,7 +7,7 @@
   populations once per episode through the new `spell` argument.
 - Reparameterized positive scales on the log scale and added regularizing
   priors for weakly identified split-population models.
-- Replaced the unscaled dual ICAR with a scaled BYM2 formulation that handles
+- Replaced the unscaled dual ICAR with a scaled proper-CAR mixture that handles
   disconnected components and isolated areas.
 - Re-ran the Walter (2015) benchmark: pooled, exchangeable, and spatial models
   completed with zero divergences and zero maximum-treedepth transitions.
