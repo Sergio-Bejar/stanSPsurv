@@ -30,7 +30,7 @@ stan_spatial_spsurv(formula, split_formula, data, area, adjacency, spell = NULL,
   \item{group}{Group identifier as a column name or vector.}
   \item{area}{Spatial unit identifier as a column name or vector.}
   \item{adjacency}{Symmetric binary adjacency matrix. Disconnected components
-  and isolated areas are supported by the BYM2 specification.}
+  and isolated areas are supported by the proper-CAR mixture.}
   \item{...}{Sampling arguments passed to CmdStan.}
 }
 \value{An object of class \code{stanSPsurv}.}
