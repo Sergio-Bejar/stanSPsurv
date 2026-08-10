@@ -7,7 +7,7 @@
 
 `stanSPsurv` is a development-stage R package for Bayesian
 split-population survival models fitted with Stan. It provides a common API
-for pooled, exchangeable-frailty, and spatial BYM2 specifications with
+for pooled, exchangeable-frailty, and scaled proper-CAR specifications with
 Weibull or log-logistic event-time distributions.
 
 > **Validation status:** all six candidate specifications compile and complete
@@ -18,7 +18,8 @@ Weibull or log-logistic event-time distributions.
 > use.
 
 > **Walter benchmark:** after introducing episode-level mixtures, separate Stan
-> programs, log-scale variance parameters, and BYM2, the pooled, exchangeable,
+> programs, log-scale variance parameters, and a proper-CAR mixture, the pooled,
+> exchangeable,
 > and official 800 km spatial runs completed with zero divergences and zero
 > maximum-treedepth transitions. The spatial run remains slow and substantive
 > validation is still required. See [`validation/walter`](validation/walter).
