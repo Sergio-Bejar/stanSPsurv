@@ -18,13 +18,13 @@ sampling iterations per chain.
 |---|---:|---:|---:|---|
 | Pooled Weibull | 0/2,000 | 0 | <= 1.01 | Passed; 12 seconds |
 | Exchangeable Weibull | 0/2,000 | 0 | <= 1.01 | Passed; 31 seconds |
-| Spatial BYM2, official 800 km | 0/1,000 | 0 | <= 1.01 | Passed; 841 seconds |
+| Spatial proper CAR, official 800 km | 0/1,000 | 0 | <= 1.01 | Passed; 841 seconds |
 
 The original implementation produced 394/2,000 pooled divergences and
 542/2,000 exchangeable divergences; its spatial smoke test stalled. The repair
 uses structure-specific Stan programs, an episode-level mixture likelihood,
 log-scale and non-centered frailty parameters, regularizing priors, centered
-Walter predictors, and a component-aware BYM2 prior. These changes remove the
-observed geometric failures. The BYM2 implementation is still computationally
+Walter predictors, and a component-aware proper-CAR mixture. These changes remove the
+observed geometric failures. The spatial implementation is still computationally
 expensive and its substantive estimates must be compared with the original
 `BayesSPsurv` implementation before publication.
