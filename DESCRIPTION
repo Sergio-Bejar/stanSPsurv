@@ -10,7 +10,7 @@ Authors@R: c(
   )
 Description: Fits Bayesian split-population survival models with Weibull or
     log-logistic event-time distributions using Stan. Pooled, exchangeable
-    group-frailty, and scaled BYM2 spatial
+    group-frailty, and scaled proper conditional autoregressive spatial
     specifications share a common interface. This development version is
     intended for methodological validation before substantive use.
 License: CC0 + file LICENSE
