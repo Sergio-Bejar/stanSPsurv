@@ -13,7 +13,8 @@
 #' @return Invisible `NULL`. Called for its side effect.
 #' @export
 plot.stanSPsurv <- function(x, which = c("both", "survival", "split"),
-                            include_intercept = FALSE, prob = 0.90, ...) {
+                            include_intercept = FALSE, prob = 0.90,
+                            main = "Coefficient plot", ...) {
   which <- match.arg(which)
   alpha <- (1 - prob) / 2
   draws <- x$fit$draws(c("beta", "gamma"), format = "matrix")
@@ -68,7 +69,7 @@ plot.stanSPsurv <- function(x, which = c("both", "survival", "split"),
   on.exit(graphics::par(opar))
 
   plot(means, seq_len(n), xlim = xlim, yaxt = "n", pch = pch, col = cols,
-       xlab = "Estimate", ylab = "", main = "Coefficient plot",
+       xlab = "Estimate", ylab = "", main = main,
        panel.first = graphics::abline(v = 0, lty = 2, col = "grey60"), ...)
   graphics::segments(lo, seq_len(n), hi, seq_len(n), col = cols, lwd = 2)
   graphics::axis(2, at = seq_len(n), labels = all_labs, las = 1, cex.axis = 0.8)
