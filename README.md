@@ -66,6 +66,37 @@ Exchangeable and spatial
 models estimate separate frailties for the split and survival stages; use
 `frailty(fit, stage = "split")` or `frailty(fit, stage = "survival")`.
 
+## Plotting
+
+Five plotting functions are included, all using base R graphics:
+
+```r
+# Coefficient forest plot (beta and gamma with 90% CIs)
+plot(fit)
+
+# Survival curves with credible bands
+plot_survival(fit, newdata = data.frame(x = c(-1, 0, 1)),
+              times = seq(0.1, 20, by = 0.5),
+              labels = c("x = -1", "x = 0", "x = +1"))
+
+# Susceptibility probability across a covariate range
+plot_susceptibility(fit, variable = "z", data = original_data)
+
+# Frailty caterpillar plot (exchangeable or spatial models)
+plot_frailty(fit, stage = "survival")
+
+# Choropleth map of spatial frailties (maps or sf back-end)
+plot_choropleth(fit, stage = "survival",
+                regions = c("Colombia", "Venezuela", "Ecuador",
+                            "Peru", "Bolivia", "Brazil"))
+# or with an sf object:
+plot_choropleth(fit, stage = "survival", sf_map = my_sf, sf_key = "iso3")
+```
+
+The `maps` back-end requires the `maps` package (in `Suggests`); the `sf`
+back-end requires the `sf` package.  Both produce a diverging blue-white-red
+choropleth centred at zero with a colour-bar legend.
+
 ## Validation
 
 ### Parameter recovery (simulation study)
