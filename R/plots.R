@@ -252,7 +252,126 @@ plot_frailty <- function(object, stage = c("survival", "split"),
   invisible(data.frame(group = labs, mean = means, lo = lo, hi = hi))
 }
 
-# -- Internal helper ---------------------------------------------------------
+#' Choropleth map of spatial frailties
+#'
+#' Draws a choropleth (filled map) of posterior-mean frailties from a
+#' spatial `stanSPsurv` model.  Two back-ends are supported:
+#'
+#' * **`maps` back-end** (default): pass `regions`, a character vector of
+#'   country or region names matching the `maps::world` database, in the
+#'   same order as the spatial units used when fitting.
+#' * **`sf` back-end**: pass `sf_map`, an `sf` object with a geometry
+#'   column and a key column whose values match `group_levels`.
+#'
+#' @param object A fitted `stanSPsurv` object with `structure = "spatial"`.
+#' @param stage Which frailty: `"survival"` (w) or `"split"` (v).
+#' @param regions Character vector of region names for the `maps` back-end,
+#'   ordered to match `group_levels`.
+#' @param sf_map An `sf` object for the `sf` back-end.
+#' @param sf_key Column name in `sf_map` that matches `group_levels`.
+#' @param palette A vector of colours for the gradient.  Default is a
+#'   blue-white-red diverging palette.
+#' @param main Plot title.
+#' @param ... Additional arguments passed to [plot()].
+#' @return Invisible data frame with group, mean frailty, and assigned colour.
+#' @export
+plot_choropleth <- function(object,
+                            stage = c("survival", "split"),
+                            regions = NULL,
+                            sf_map = NULL, sf_key = NULL,
+                            palette = NULL,
+                            main = NULL, ...) {
+  if (!inherits(object, "stanSPsurv"))
+    stop("object must be a stanSPsurv fit.", call. = FALSE)
+  if (object$structure != "spatial")
+    stop("Choropleth requires a spatial model.", call. = FALSE)
+
+  stage <- match.arg(stage)
+  variable <- if (stage == "survival") "w" else "v"
+  draws <- object$fit$draws(variable, format = "matrix")
+  means <- colMeans(draws)
+  labs  <- object$group_levels
+  if (is.null(labs)) labs <- seq_along(means)
+
+  if (is.null(main))
+    main <- paste0("Spatial frailties: ", if (stage == "survival") "w" else "v")
+
+  # Colour ramp
+  if (is.null(palette))
+    palette <- c("#2166AC", "#67A9CF", "#D1E5F0", "#F7F7F7",
+                 "#FDDBC7", "#EF8A62", "#B2182B")
+  ramp <- grDevices::colorRampPalette(palette)
+  n_cols <- 100
+  col_seq <- ramp(n_cols)
+
+  # Map values to colours (diverging around 0)
+  abs_max <- max(abs(means))
+  if (abs_max == 0) abs_max <- 1
+  scaled <- (means / abs_max + 1) / 2   # rescale to [0, 1]
+  col_idx <- pmax(1L, pmin(n_cols, as.integer(scaled * (n_cols - 1)) + 1L))
+  fill_cols <- col_seq[col_idx]
+
+  # ---- sf back-end ---------------------------------------------------------
+  if (!is.null(sf_map)) {
+    if (!requireNamespace("sf", quietly = TRUE))
+      stop("Package 'sf' is required for the sf back-end.", call. = FALSE)
+    if (is.null(sf_key))
+      stop("sf_key must name the column in sf_map that matches group_levels.",
+           call. = FALSE)
+    sf_map$.frailty_mean <- means[match(sf_map[[sf_key]], labs)]
+    sf_map$.frailty_col  <- fill_cols[match(sf_map[[sf_key]], labs)]
+    plot(sf::st_geometry(sf_map), col = sf_map$.frailty_col,
+         border = "grey30", lwd = 0.4, main = main, ...)
+    add_frailty_legend(abs_max, col_seq, n_cols)
+    return(invisible(data.frame(group = labs, mean = means, col = fill_cols)))
+  }
+
+  # ---- maps back-end -------------------------------------------------------
+  if (!is.null(regions)) {
+    if (!requireNamespace("maps", quietly = TRUE))
+      stop("Package 'maps' is required for the maps back-end.", call. = FALSE)
+    if (length(regions) != length(means))
+      stop("regions must have the same length as group_levels.", call. = FALSE)
+
+    world <- maps::map("world", plot = FALSE)
+    maps::map("world", col = "grey90", fill = TRUE, border = "grey70",
+              lwd = 0.3, main = main, ...)
+    graphics::title(main = main)
+    for (i in seq_along(regions)) {
+      maps::map("world", regions = regions[i], col = fill_cols[i],
+                fill = TRUE, border = "grey30", lwd = 0.5, add = TRUE)
+    }
+    add_frailty_legend(abs_max, col_seq, n_cols)
+    return(invisible(data.frame(group = labs, mean = means, col = fill_cols)))
+  }
+
+  stop("Provide either 'regions' (maps back-end) or 'sf_map' + 'sf_key' (sf back-end).",
+       call. = FALSE)
+}
+
+# -- Internal helpers --------------------------------------------------------
+
+add_frailty_legend <- function(abs_max, col_seq, n_cols) {
+  n_ticks <- 5
+  tick_vals <- seq(-abs_max, abs_max, length.out = n_ticks)
+  tick_labs <- sprintf("%.2f", tick_vals)
+
+  usr <- graphics::par("usr")
+  x0 <- usr[1] + (usr[2] - usr[1]) * 0.02
+  x1 <- usr[1] + (usr[2] - usr[1]) * 0.04
+  y0 <- usr[3] + (usr[4] - usr[3]) * 0.15
+  y1 <- usr[3] + (usr[4] - usr[3]) * 0.85
+  ys <- seq(y0, y1, length.out = n_cols + 1)
+
+  for (k in seq_len(n_cols))
+    graphics::rect(x0, ys[k], x1, ys[k + 1], col = col_seq[k], border = NA)
+  graphics::rect(x0, y0, x1, y1, border = "grey30", lwd = 0.5)
+
+  tick_y <- seq(y0, y1, length.out = n_ticks)
+  graphics::segments(x1, tick_y, x1 + (x1 - x0) * 0.3, tick_y, col = "grey30")
+  graphics::text(x1 + (x1 - x0) * 0.5, tick_y, tick_labs,
+                 adj = 0, cex = 0.6, col = "grey30")
+}
 
 coef_labels <- function(terms_obj) {
   vars <- attr(terms_obj, "term.labels")
