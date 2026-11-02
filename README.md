@@ -69,6 +69,12 @@ models estimate separate frailties for the split and survival stages; use
 ## Plotting
 
 Five plotting functions are included, all using base R graphics.
+The panel below shows all four on the Walter (2015) post-war peace data
+(spatial Weibull model, 46 countries, 800 km adjacency graph):
+
+<p align="center">
+  <img src="man/figures/walter_panel.png" alt="Walter panel" width="900">
+</p>
 
 ### Coefficient plot
 
@@ -76,40 +82,38 @@ Five plotting functions are included, all using base R graphics.
 plot(fit)
 ```
 
-<p align="center">
-  <img src="man/figures/coef_plot_example.png" alt="Coefficient plot" width="580">
-</p>
-
 ### Survival curves
 
 ```r
-plot_survival(fit, newdata = data.frame(x = c(-1, 0, 1)),
-              times = seq(0.1, 20, by = 0.5),
-              labels = c("x = -1", "x = 0", "x = +1"))
+plot_survival(fit, newdata = data.frame(victory = c(0, 1), comprehensive = c(0, 0),
+                                        lgdpl_c = 0, unpko = 0),
+              times = seq(0.5, 30, length.out = 60),
+              labels = c("Baseline", "Victory"))
 ```
-
-<p align="center">
-  <img src="man/figures/survival_curves_example.png" alt="Survival curves" width="660">
-</p>
 
 ### Susceptibility and frailty
 
 ```r
-plot_susceptibility(fit, variable = "z", data = original_data)
+plot_susceptibility(fit, variable = "lgdpl_split_c", data = d)
 plot_frailty(fit, stage = "survival")
 ```
 
 ### Choropleth map of spatial frailties
 
 ```r
-plot_choropleth(fit, stage = "survival",
-                regions = c("Colombia", "Venezuela", "Ecuador",
-                            "Peru", "Bolivia", "Brazil"))
+plot_choropleth(fit, stage = "survival", regions = country_names)
 ```
 
 <p align="center">
   <img src="man/figures/choropleth_example.png" alt="Choropleth" width="740">
 </p>
+
+The `maps` back-end requires the `maps` package (in `Suggests`).
+An `sf` back-end is also available for arbitrary spatial geometries:
+
+```r
+plot_choropleth(fit, stage = "survival", sf_map = my_sf, sf_key = "iso3")
+```
 
 The `maps` back-end requires the `maps` package (in `Suggests`).
 An `sf` back-end is also available for arbitrary spatial geometries:

@@ -100,7 +100,8 @@ plot.stanSPsurv <- function(x, which = c("both", "survival", "split"),
 #'   (rows = profiles, cols = times).
 #' @export
 plot_survival <- function(object, newdata, times, prob = 0.90,
-                          labels = NULL, cols = NULL, ...) {
+                          labels = NULL, cols = NULL,
+                          main = "Survival curves", ...) {
   if (!inherits(object, "stanSPsurv"))
     stop("object must be a stanSPsurv fit.", call. = FALSE)
   if (missing(times) || length(times) < 2L)
@@ -138,7 +139,7 @@ plot_survival <- function(object, newdata, times, prob = 0.90,
   if (is.null(labels)) labels <- paste0("Profile ", seq_len(np))
 
   plot(range(times), c(0, 1), type = "n", xlab = "Time",
-       ylab = "S(t)", main = "Survival curves", ...)
+       ylab = "S(t)", main = main, ...)
   for (i in seq_len(np)) {
     graphics::polygon(c(times, rev(times)),
                       c(S_lo[i, ], rev(S_hi[i, ])),
@@ -166,7 +167,8 @@ plot_survival <- function(object, newdata, times, prob = 0.90,
 #' @return Invisible data frame with columns `x`, `mean`, `lo`, `hi`.
 #' @export
 plot_susceptibility <- function(object, variable, data, n_points = 100L,
-                                prob = 0.90, ...) {
+                                prob = 0.90,
+                                main = "Susceptibility", ...) {
   if (!inherits(object, "stanSPsurv"))
     stop("object must be a stanSPsurv fit.", call. = FALSE)
   if (!variable %in% names(data))
@@ -193,7 +195,7 @@ plot_susceptibility <- function(object, variable, data, n_points = 100L,
 
   plot(x_seq, pi_mean, type = "l", lwd = 2, col = "steelblue",
        xlab = variable, ylab = expression(P(susceptible)),
-       ylim = c(0, 1), main = "Susceptibility", ...)
+       ylim = c(0, 1), main = main, ...)
   graphics::polygon(c(x_seq, rev(x_seq)), c(pi_lo, rev(pi_hi)),
                     col = grDevices::adjustcolor("steelblue", alpha.f = 0.2),
                     border = NA)
