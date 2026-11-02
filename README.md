@@ -68,34 +68,55 @@ models estimate separate frailties for the split and survival stages; use
 
 ## Plotting
 
-Five plotting functions are included, all using base R graphics:
+Five plotting functions are included, all using base R graphics.
+
+### Coefficient plot
 
 ```r
-# Coefficient forest plot (beta and gamma with 90% CIs)
 plot(fit)
+```
 
-# Survival curves with credible bands
+<p align="center">
+  <img src="man/figures/coef_plot_example.png" alt="Coefficient plot" width="580">
+</p>
+
+### Survival curves
+
+```r
 plot_survival(fit, newdata = data.frame(x = c(-1, 0, 1)),
               times = seq(0.1, 20, by = 0.5),
               labels = c("x = -1", "x = 0", "x = +1"))
+```
 
-# Susceptibility probability across a covariate range
+<p align="center">
+  <img src="man/figures/survival_curves_example.png" alt="Survival curves" width="660">
+</p>
+
+### Susceptibility and frailty
+
+```r
 plot_susceptibility(fit, variable = "z", data = original_data)
-
-# Frailty caterpillar plot (exchangeable or spatial models)
 plot_frailty(fit, stage = "survival")
+```
 
-# Choropleth map of spatial frailties (maps or sf back-end)
+### Choropleth map of spatial frailties
+
+```r
 plot_choropleth(fit, stage = "survival",
                 regions = c("Colombia", "Venezuela", "Ecuador",
                             "Peru", "Bolivia", "Brazil"))
-# or with an sf object:
-plot_choropleth(fit, stage = "survival", sf_map = my_sf, sf_key = "iso3")
 ```
 
-The `maps` back-end requires the `maps` package (in `Suggests`); the `sf`
-back-end requires the `sf` package.  Both produce a diverging blue-white-red
-choropleth centred at zero with a colour-bar legend.
+<p align="center">
+  <img src="man/figures/choropleth_example.png" alt="Choropleth" width="740">
+</p>
+
+The `maps` back-end requires the `maps` package (in `Suggests`).
+An `sf` back-end is also available for arbitrary spatial geometries:
+
+```r
+plot_choropleth(fit, stage = "survival", sf_map = my_sf, sf_key = "iso3")
+```
 
 ## Validation
 
