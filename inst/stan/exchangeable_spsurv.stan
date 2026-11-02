@@ -1,4 +1,3 @@
-/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 functions {
   real event_lpdf(real t, real eta, real shape, int baseline) {
     if (baseline == 1)

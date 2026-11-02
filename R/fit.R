@@ -1,4 +1,3 @@
-/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 #' Fit a pooled split-population survival model
 #'
 #' @param formula Survival-stage formula with a two-column response

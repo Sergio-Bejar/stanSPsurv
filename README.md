@@ -1,4 +1,3 @@
-/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 # stanSPsurv
 
 <p align="center">

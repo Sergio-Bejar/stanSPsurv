@@ -1,4 +1,3 @@
-/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 #' @export
 print.stanSPsurv <- function(x, ...) {
   cat("stanSPsurv fit\n", "  structure: ", x$structure,

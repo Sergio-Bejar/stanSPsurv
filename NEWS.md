@@ -1,4 +1,3 @@
-/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 # stanSPsurv 0.0.3.9000
 
 - Split the pooled, exchangeable, and spatial implementations into separate

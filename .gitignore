@@ -21,3 +21,6 @@ analysis/vdem/data-raw/
 analysis/vdem/output/*.rds
 analysis/vdem/output/fits/
 analysis/vdem/output/cmdstan/
+inst/stan/pooled_spsurv
+inst/stan/exchangeable_spsurv
+inst/stan/spatial_spsurv

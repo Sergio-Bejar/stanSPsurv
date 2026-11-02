@@ -1,4 +1,3 @@
-/Users/sergiobejar/.rvm/scripts/rvm:29: operation not permitted: ps
 prepare_spsurv_data <- function(formula, split_formula, data, group = NULL,
                                 adjacency = NULL, spell = NULL) {
   mf_y <- stats::model.frame(formula, data = data, na.action = stats::na.pass)
