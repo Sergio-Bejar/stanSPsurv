@@ -10,10 +10,34 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-Bayesian split-population (cure) survival models fitted with
-[Stan](https://mc-stan.org). Provides pooled, exchangeable-frailty, and
-scaled proper-CAR spatial specifications with Weibull or log-logistic
-baselines through a common formula interface.
+`stanSPsurv` fits Bayesian split-population (cure) survival models
+using [Stan](https://mc-stan.org) via `cmdstanr`.
+
+Standard survival models assume that every unit is at risk of
+experiencing the event of interest. In many applications this assumption
+does not hold: some units may be structurally immune to the event (e.g.,
+post-conflict states that will never return to war, patients who are
+cured of a disease). Split-population models address this by jointly
+estimating two processes---a logistic model for the probability that a
+unit is *susceptible* to the event, and a duration model for *how long*
+susceptible units survive before the event occurs.
+
+`stanSPsurv` builds on [BayesSPsurv](https://github.com/Sergio-Bejar/BayesSPsurv)
+(Bolte et al., 2021), replacing the hand-coded MCMC sampler (slice
+sampling and Metropolis-Hastings in C++) with Stan's Hamiltonian Monte
+Carlo (HMC). This brings two practical advantages. First, HMC explores
+the posterior more efficiently than component-wise slice sampling,
+delivering 40 to 1,000 times more effective samples per second on the
+same data. Second, the Stan modeling language makes it straightforward
+to extend the model---adding new baseline hazards, alternative priors,
+or hierarchical structures requires modifying a few lines of Stan code
+rather than hundreds of lines of C++.
+
+The package provides three model families---pooled, exchangeable-frailty,
+and spatial CAR---with Weibull or log-logistic baselines, a simplified
+interface built around `survival::Surv()`, and built-in functions for
+coefficient plots, survival curves, susceptibility profiles, frailty
+caterpillar plots, and choropleth maps.
 
 ## Installation
 
