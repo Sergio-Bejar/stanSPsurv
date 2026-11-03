@@ -157,14 +157,14 @@ Rscript validation/simulation_study.R          # defaults: --reps 100 --N 500
 Rscript validation/simulation_study.R --reps 5 # quick smoke test
 ```
 
-| Structure    | Baseline     | Max |bias| | Max RMSE | Coverage 90% | Divergences | Median sec |
-|--------------|--------------|-------------|----------|--------------|-------------|------------|
-| Pooled       | Weibull      | 0.014       | 0.110    | 87–93 %      | 0           | 4.6        |
-| Pooled       | Log-logistic | 0.043       | 0.163    | 81–93 %      | 0           | 2.8        |
-| Exchangeable | Weibull      | 0.025       | 0.135    | 86–90 %      | 0           | 9.7        |
-| Exchangeable | Log-logistic | 0.069       | 0.181    | 90–95 %      | 0           | 5.8        |
-| Spatial      | Weibull      | 0.031       | 0.133    | 85–97 %      | 0           | 236        |
-| Spatial      | Log-logistic | 0.049       | 0.173    | 86–96 %      | 0           | 242        |
+| Structure | Baseline | Max abs. bias | Max RMSE | Coverage 90% | Divergences | Median sec |
+|---|---|---|---|---|---|---|
+| Pooled | Weibull | 0.014 | 0.110 | 87–93 % | 0 | 4.6 |
+| Pooled | Log-logistic | 0.043 | 0.163 | 81–93 % | 0 | 2.8 |
+| Exchangeable | Weibull | 0.025 | 0.135 | 86–90 % | 0 | 9.7 |
+| Exchangeable | Log-logistic | 0.069 | 0.181 | 90–95 % | 0 | 5.8 |
+| Spatial | Weibull | 0.031 | 0.133 | 85–97 % | 0 | 236 |
+| Spatial | Log-logistic | 0.049 | 0.173 | 86–96 % | 0 | 242 |
 
 ### Comparison with BayesSPsurv
 
