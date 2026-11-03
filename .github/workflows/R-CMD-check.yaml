@@ -33,17 +33,18 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
+      - name: Install cmdstanr first
+        run: |
+          install.packages("cmdstanr", repos = c("https://stan-dev.r-universe.dev", "https://cloud.r-project.org"))
+        shell: Rscript {0}
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           pak-version: devel
-        env:
-          R_REMOTES_STANDALONE: true
-          R_PKG_REPOS: 'https://stan-dev.r-universe.dev,https://cloud.r-project.org'
 
-      - name: Install cmdstanr and CmdStan
+      - name: Install CmdStan
         run: |
-          install.packages("cmdstanr", repos = c("https://stan-dev.r-universe.dev", "https://cloud.r-project.org"))
           cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
         shell: Rscript {0}
 
