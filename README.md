@@ -10,7 +10,7 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-#What is `StanSPsurv`?
+# What is `StanSPsurv`?
 
 Standard survival models assume that every unit is at risk of
 experiencing the event of interest. In many applications this assumption
