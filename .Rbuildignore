@@ -13,3 +13,5 @@
 ^AGENTS\.md$
 ^README\.md$
 ^data-raw$
+^docs$
+^pkgdown$
