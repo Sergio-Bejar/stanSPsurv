@@ -10,9 +10,6 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-`stanSPsurv` fits Bayesian split-population (cure) survival models
-using [Stan](https://mc-stan.org) via `cmdstanr`.
-
 Standard survival models assume that every unit is at risk of
 experiencing the event of interest. In many applications this assumption
 does not hold: some units may be structurally immune to the event (e.g.,
@@ -22,18 +19,20 @@ estimating two processes---a logistic model for the probability that a
 unit is *susceptible* to the event, and a duration model for *how long*
 susceptible units survive before the event occurs.
 
-`stanSPsurv` builds on [BayesSPsurv](https://github.com/Sergio-Bejar/BayesSPsurv)
-(Bolte et al., 2021), replacing the hand-coded MCMC sampler (slice
+`stanSPsurv` fits Bayesian split-population (cure) survival models
+using [Stan](https://mc-stan.org) via `cmdstanr`. It builds on [BayesSPsurv](https://github.com/Sergio-Bejar/BayesSPsurv)
+(Bolte et al., 2021), but, by replacing the hand-coded MCMC sampler (slice
 sampling and Metropolis-Hastings in C++) with Stan's Hamiltonian Monte
-Carlo (HMC). This brings two practical advantages. First, HMC explores
+Carlo (HMC). This has two advantages. First, HMC explores
 the posterior more efficiently than component-wise slice sampling,
 delivering 40 to 1,000 times more effective samples per second on the
-same data. Second, the Stan modeling language makes it straightforward
-to extend the model---adding new baseline hazards, alternative priors,
+same data. Second, the Stan modeling language allows for seamlessly
+extensions the model---adding new baseline hazards, alternative priors,
 or hierarchical structures requires modifying a few lines of Stan code
 rather than hundreds of lines of C++.
 
-The package provides three model families---pooled, exchangeable-frailty,
+
+Users can estimate three model families---pooled, exchangeable-frailty,
 and spatial CAR---with Weibull or log-logistic baselines, a simplified
 interface built around `survival::Surv()`, and built-in functions for
 coefficient plots, survival curves, susceptibility profiles, frailty
@@ -97,8 +96,8 @@ the split and survival stages; use
 
 ## Plotting
 
-Five plotting functions are included, all using base R graphics.
-The panel below shows results on the Walter (2015) post-war peace data
+`stanSPsurv` includes five plotting functions, which use base R graphics.
+The panel below shows, for instance, results on the Walter (2015) post-war peace data
 (spatial Weibull model, 46 countries, 800 km adjacency graph):
 
 <p align="center">
@@ -181,8 +180,8 @@ Head-to-head comparison on the same simulated data
 | Wall time (pooled)        | 3 sec       | 152 sec     |
 | Wall time (exchangeable)  | 6 sec       | 239 sec     |
 
-Two limitations of BayesSPsurv affect the comparison. First, its Weibull
-shape parameter is constrained to < 1 (only decreasing hazards). Second, a
+It is important to note that two limitations of `BayesSPsurv` affect the comparison above. First, its Weibull
+shape parameter is constrained to < 1 (only decreasing hazards). Further, a
 case-sensitivity bug in its MCMC engine prevents the shape parameter from
 being sampled unless patched locally.
 
