@@ -1,3 +1,40 @@
+# stanSPsurv 0.1.0
+
+## CRAN submission
+
+- First public release. `R CMD check --as-cran` passes with Status: OK.
+- License changed from CC0 to MIT.
+
+## Validation
+
+- Added 100-replication parameter recovery study for all six specifications
+  (3 structures × 2 baselines, N = 500). Zero divergences across 600 runs,
+  Rhat < 1.001, 81–97 % empirical coverage of 90 % credible intervals.
+- Added 50-replication head-to-head comparison with `BayesSPsurv`:
+  comparable bias, 40–1 000× higher ESS per second in stanSPsurv.
+- Documented a case-sensitivity bug in BayesSPsurv's MCMC engine that
+  prevents the Weibull shape parameter from being sampled.
+
+## Plotting
+
+- Added `plot.stanSPsurv()` for coefficient forest plots.
+- Added `plot_survival()` for survival curves with credible bands.
+- Added `plot_susceptibility()` for susceptibility probability curves.
+- Added `plot_frailty()` for frailty caterpillar plots.
+- Added `plot_choropleth()` for spatial frailty maps with `maps` and
+  `sf` back-ends.
+
+## Data and documentation
+
+- Added `conflict_spells` simulated dataset for examples and testing.
+- Added introductory vignette covering all model families and plotting.
+- Full roxygen documentation for all 13 exported functions and methods.
+- Added CITATION file.
+
+## Bug fixes
+
+- Fixed `complete.cases()` failure when split formula is intercept-only.
+
 # stanSPsurv 0.0.3.9000
 
 - Split the pooled, exchangeable, and spatial implementations into separate
@@ -14,23 +51,8 @@
 # stanSPsurv 0.0.2.9000
 
 - Added a reproducible V-Dem 16 / ERT 16 application for democratic-breakdown
-  spells, including a geographic-proximity graph and ready-to-run pooled,
-  exchangeable, and spatial specifications.
-- Recorded the first full pooled Weibull application run and its sampler
-  diagnostics.
-
-- Created the initial R package structure.
-- Added candidate pooled, exchangeable, and spatial split-population survival models.
-- Added Weibull and log-logistic baselines through a shared Stan backend.
-- Added coefficient, prediction, and frailty helpers.
-- Added initial input-validation tests and package branding.
-- Compiled the shared backend with CmdStan 2.39.0 and ran all six candidate
-  model combinations on simulated data.
-- Fixed an improper auxiliary parameter block in the pooled specification.
-- Added a reproducible validation script and recorded convergence diagnostics.
-- Achieved `R CMD check --no-manual` status OK on R 4.2.1 for macOS.
-- Added counting-process `Surv(t0, time, event)` support for time-varying
-  country-year covariates and repeated episode rows.
-- Added distinct split-stage and survival-stage frailties with separate CAR
-  processes in spatial models.
-- Extended `frailty()` with a `stage` argument and added start-stop tests.
+  spells.
+- Created the initial R package structure with pooled, exchangeable, and
+  spatial split-population survival models.
+- Added Weibull and log-logistic baselines, coefficient/prediction/frailty
+  helpers, counting-process support, and input-validation tests.

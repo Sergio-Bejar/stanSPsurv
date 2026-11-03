@@ -12,3 +12,4 @@
 ^inst/stan/spatial_spsurv$
 ^AGENTS\.md$
 ^README\.md$
+^data-raw$

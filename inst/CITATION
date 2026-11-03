@@ -1,0 +1,11 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "stanSPsurv: Bayesian Split-Population Survival Models with Stan",
+  author   = c(
+    person("Sergio", "Béjar"),
+    person("Bumba", "Mukherjee")
+  ),
+  year     = "2026",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/Sergio-Bejar/stanSPsurv"
+)

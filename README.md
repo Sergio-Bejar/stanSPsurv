@@ -4,72 +4,77 @@
   <img src="man/figures/logo.png" alt="stanSPsurv logo" width="260">
 </p>
 
-`stanSPsurv` is a development-stage R package for Bayesian
-split-population survival models fitted with Stan. It provides a common API
-for pooled, exchangeable-frailty, and scaled proper-CAR specifications with
-Weibull or log-logistic event-time distributions.
+<!-- badges: start -->
+[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen)](https://github.com/Sergio-Bejar/stanSPsurv)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
 
-> **Validation status:** all six specifications pass a 100-replication
-> parameter recovery study (N = 500) with zero divergences, Rhat < 1.001,
-> and 81–97 % empirical coverage of 90 % credible intervals. A formal
-> 50-replication comparison with `BayesSPsurv` shows comparable bias when
-> the Weibull shape is within BayesSPsurv's support (< 1), with stanSPsurv
-> delivering 40–1 000× higher ESS per second. `R CMD check --no-manual`
-> passes with `Status: OK`. See [Validation](#validation) below.
-
-> **Walter benchmark:** pooled, exchangeable, and 800 km spatial runs
-> completed with zero divergences and zero maximum-treedepth transitions
-> after introducing episode-level mixtures, separate Stan programs,
-> log-scale variance parameters, and a proper-CAR mixture. See
-> [`validation/walter`](validation/walter).
+Bayesian split-population (cure) survival models fitted with
+[Stan](https://mc-stan.org). Provides pooled, exchangeable-frailty, and
+scaled proper-CAR spatial specifications with Weibull or log-logistic
+baselines through a common formula interface.
 
 ## Installation
 
-The package is currently private and under active development. It requires R
-4.1 or newer, `cmdstanr`, and a working CmdStan installation.
+`stanSPsurv` requires [CmdStan](https://mc-stan.org/users/interfaces/cmdstan).
+Install the toolchain first, then the package:
 
 ```r
+# 1. Install cmdstanr (Stan's R interface)
+install.packages("cmdstanr",
+                 repos = c("https://stan-dev.r-universe.dev",
+                           "https://cloud.r-project.org"))
+
+# 2. Install CmdStan (C++ backend)
 cmdstanr::install_cmdstan()
+
+# 3. Install stanSPsurv
+# install.packages("remotes")
+remotes::install_github("Sergio-Bejar/stanSPsurv")
 ```
 
-## Example
+## Quick start
 
 ```r
-library(survival)
 library(stanSPsurv)
 
+data(conflict_spells)
+
 fit <- stan_pooled_spsurv(
-  Surv(time, status) ~ age + sex,
-  split_formula = ~ age + sex,
-  data = lung,
+  Surv(time, event) ~ victory + gdp + peacekeeping,
+  split_formula = ~ gdp,
+  data = conflict_spells,
   form = "weibull",
   chains = 4,
   parallel_chains = 4
 )
 
 summary(fit)
-coef(fit, component = "survival")
+plot(fit)
 ```
 
 ## Model families
 
-- `stan_pooled_spsurv()`
-- `stan_exchange_spsurv()`
-- `stan_spatial_spsurv()`
+| Function | Structure | Frailties |
+|---|---|---|
+| `stan_pooled_spsurv()` | Pooled | None |
+| `stan_exchange_spsurv()` | Exchangeable | iid normal per group |
+| `stan_spatial_spsurv()` | Spatial CAR | BYM2 proper-CAR per area |
 
 Each supports `form = "weibull"` or `form = "loglogistic"`.
 
 Both `Surv(time, event)` and counting-process
-`Surv(t0, time, event)` responses are supported. Counting-process models require
-the `spell` argument and evaluate latent susceptibility once per episode.
-Exchangeable and spatial
-models estimate separate frailties for the split and survival stages; use
+`Surv(t0, time, event)` responses are supported. Counting-process models
+require the `spell` argument and evaluate latent susceptibility once per
+episode. Exchangeable and spatial models estimate separate frailties for
+the split and survival stages; use
 `frailty(fit, stage = "split")` or `frailty(fit, stage = "survival")`.
 
 ## Plotting
 
 Five plotting functions are included, all using base R graphics.
-The panel below shows all four on the Walter (2015) post-war peace data
+The panel below shows results on the Walter (2015) post-war peace data
 (spatial Weibull model, 46 countries, 800 km adjacency graph):
 
 <p align="center">
@@ -85,8 +90,8 @@ plot(fit)
 ### Survival curves
 
 ```r
-plot_survival(fit, newdata = data.frame(victory = c(0, 1), comprehensive = c(0, 0),
-                                        lgdpl_c = 0, unpko = 0),
+plot_survival(fit, newdata = data.frame(victory = c(0, 1), gdp = 0,
+                                        peacekeeping = 0),
               times = seq(0.5, 30, length.out = 60),
               labels = c("Baseline", "Victory"))
 ```
@@ -94,7 +99,7 @@ plot_survival(fit, newdata = data.frame(victory = c(0, 1), comprehensive = c(0, 
 ### Susceptibility and frailty
 
 ```r
-plot_susceptibility(fit, variable = "lgdpl_split_c", data = d)
+plot_susceptibility(fit, variable = "gdp", data = conflict_spells)
 plot_frailty(fit, stage = "survival")
 ```
 
@@ -115,18 +120,11 @@ An `sf` back-end is also available for arbitrary spatial geometries:
 plot_choropleth(fit, stage = "survival", sf_map = my_sf, sf_key = "iso3")
 ```
 
-The `maps` back-end requires the `maps` package (in `Suggests`).
-An `sf` back-end is also available for arbitrary spatial geometries:
-
-```r
-plot_choropleth(fit, stage = "survival", sf_map = my_sf, sf_key = "iso3")
-```
-
 ## Validation
 
 ### Parameter recovery (simulation study)
 
-The full study runs 100 replications of each of the six model specifications
+100 replications of each of the six model specifications
 (3 structures × 2 baselines) on data simulated with known parameters
 (N = 500 per replication):
 
@@ -134,8 +132,6 @@ The full study runs 100 replications of each of the six model specifications
 Rscript validation/simulation_study.R          # defaults: --reps 100 --N 500
 Rscript validation/simulation_study.R --reps 5 # quick smoke test
 ```
-
-Results from the latest run (`validation/simulation_output/summary.csv`):
 
 | Structure    | Baseline     | Max |bias| | Max RMSE | Coverage 90% | Divergences | Median sec |
 |--------------|--------------|-------------|----------|--------------|-------------|------------|
@@ -148,13 +144,8 @@ Results from the latest run (`validation/simulation_output/summary.csv`):
 
 ### Comparison with BayesSPsurv
 
-A head-to-head comparison fits the same simulated data with both packages
-(50 replications, N = 400, pooled and exchangeable Weibull with shape = 0.75):
-
-```sh
-Rscript validation/compare_bayesspsurv.R          # defaults: --reps 50 --N 400
-Rscript validation/compare_bayesspsurv.R --reps 5 # quick smoke test
-```
+Head-to-head comparison on the same simulated data
+(50 replications, N = 400, pooled and exchangeable Weibull, shape = 0.75):
 
 | Metric                    | stanSPsurv  | BayesSPsurv |
 |---------------------------|-------------|-------------|
@@ -166,29 +157,24 @@ Rscript validation/compare_bayesspsurv.R --reps 5 # quick smoke test
 | Wall time (pooled)        | 3 sec       | 152 sec     |
 | Wall time (exchangeable)  | 6 sec       | 239 sec     |
 
-Two limitations of BayesSPsurv affect the comparison. First, its Weibull shape
-parameter `rho` is constrained to `rho >= 0.01` with a Gamma(1,1) prior, so
-`shape = exp(-rho) <= 0.99` — only decreasing hazards can be represented.
-Second, a case-sensitivity bug in the MCMC engine (`form %in% "Weibull"` vs
-the lowercase `"weibull"` passed by `pooledSPsurv()`) prevents `rho` from
-being sampled at all unless patched locally.
+Two limitations of BayesSPsurv affect the comparison. First, its Weibull
+shape parameter is constrained to < 1 (only decreasing hazards). Second, a
+case-sensitivity bug in its MCMC engine prevents the shape parameter from
+being sampled unless patched locally.
 
-### Smoke test (six-model)
+### Walter (2015) benchmark
 
-The original quick smoke test is also available:
+Pooled, exchangeable, and 800 km spatial runs completed with zero
+divergences. See [`validation/walter`](validation/walter).
 
-```sh
-Rscript validation/run_models.R
+## Citation
+
+```r
+citation("stanSPsurv")
 ```
 
-Results in `validation/results.csv`.
-
-## Political-science application
-
-A reproducible V-Dem 16 / ERT 16 pipeline for democratic-breakdown spells is
-in [`analysis/vdem`](analysis/vdem). It prepares pooled, country-frailty, and
-spatial-proximity specifications while keeping raw source data and fitted
-objects out of version control.
+> Béjar S, Mukherjee B (2026). *stanSPsurv: Bayesian Split-Population
+> Survival Models with Stan*. R package version 0.1.0.
 
 ## Authors
 

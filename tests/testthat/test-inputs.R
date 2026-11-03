@@ -27,3 +27,13 @@ test_that("split covariates are spell-constant", {
     survival::Surv(t0, t, event) ~ x, ~ x, d, spell = c(1, 1)),
     "constant within each spell")
 })
+
+test_that("intercept-only split formula works", {
+  skip_if_not_installed("survival")
+  d <- data.frame(time = c(1, 2, 3), event = c(0, 1, 0), x = c(-1, 0, 1))
+  out <- stanSPsurv:::prepare_spsurv_data(
+    survival::Surv(time, event) ~ x, ~ 1, d
+  )
+  expect_equal(out$stan_data$N, 3L)
+  expect_equal(ncol(out$stan_data$Z_spell), 1L)
+})
