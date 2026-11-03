@@ -1,5 +1,8 @@
 #' Fit a pooled split-population survival model
 #'
+#' Fits a Bayesian split-population (cure) survival model with no
+#' group-level heterogeneity using Stan.
+#'
 #' @param formula Survival-stage formula with a two-column response
 #'   `Surv(time, event)`.
 #' @param split_formula Formula for the latent susceptibility probability.
@@ -7,8 +10,23 @@
 #' @param spell Episode identifier. Required for counting-process responses;
 #'   split-stage covariates must be constant within each episode.
 #' @param form Event-time distribution: `"weibull"` or `"loglogistic"`.
-#' @param ... Sampling arguments passed to [cmdstanr::CmdStanModel$sample()].
+#' @param ... Sampling arguments passed to the CmdStan sampler
+#'   (e.g., `chains`, `iter_warmup`, `iter_sampling`, `seed`).
 #' @return An object of class `stanSPsurv`.
+#' @examples
+#' \donttest{
+#' library(survival)
+#' data(lung)
+#' fit <- stan_pooled_spsurv(
+#'   Surv(time, status) ~ age + sex,
+#'   split_formula = ~ age + sex,
+#'   data = lung,
+#'   form = "weibull",
+#'   chains = 2, iter_warmup = 200, iter_sampling = 200
+#' )
+#' summary(fit)
+#' coef(fit, component = "survival")
+#' }
 #' @export
 stan_pooled_spsurv <- function(formula, split_formula, data, spell = NULL,
                                form = c("weibull", "loglogistic"), ...) {
@@ -18,8 +36,28 @@ stan_pooled_spsurv <- function(formula, split_formula, data, spell = NULL,
 }
 
 #' Fit an exchangeable-frailty split-population survival model
+#'
+#' Fits a Bayesian split-population survival model with exchangeable
+#' (iid normal) group-level frailties for both the survival and split
+#' stages.
+#'
 #' @inheritParams stan_pooled_spsurv
 #' @param group Group identifier, supplied as a column name or vector.
+#' @return An object of class `stanSPsurv`.
+#' @examples
+#' \donttest{
+#' library(survival)
+#' data(lung)
+#' lung$inst <- factor(lung$inst)
+#' fit <- stan_exchange_spsurv(
+#'   Surv(time, status) ~ age + sex,
+#'   split_formula = ~ age,
+#'   data = lung, group = inst,
+#'   form = "weibull",
+#'   chains = 2, iter_warmup = 200, iter_sampling = 200
+#' )
+#' summary(fit)
+#' }
 #' @export
 stan_exchange_spsurv <- function(formula, split_formula, data, group,
                                  spell = NULL,
@@ -31,10 +69,16 @@ stan_exchange_spsurv <- function(formula, split_formula, data, group,
 }
 
 #' Fit a spatial CAR split-population survival model
+#'
+#' Fits a Bayesian split-population survival model with a scaled
+#' proper conditional autoregressive (BYM2) spatial structure for
+#' both the survival and split stages.
+#'
 #' @inheritParams stan_pooled_spsurv
 #' @param area Spatial unit identifier, supplied as a column name or vector.
 #' @param adjacency Symmetric binary adjacency matrix ordered by the unique
 #'   values of `area`.
+#' @return An object of class `stanSPsurv`.
 #' @export
 stan_spatial_spsurv <- function(formula, split_formula, data, area, adjacency,
                                 spell = NULL,

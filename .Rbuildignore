@@ -2,9 +2,13 @@
 ^\.cmdstan$
 ^\.git$
 ^\.gitignore$
-^validation/output$
+^validation$
+^analysis$
 ^stanSPsurv_.*\.tar\.gz$
 ^stanSPsurv\.Rcheck$
 ^inst/stan/spsurv$
+^inst/stan/pooled_spsurv$
+^inst/stan/exchangeable_spsurv$
+^inst/stan/spatial_spsurv$
 ^AGENTS\.md$
-
+^README\.md$

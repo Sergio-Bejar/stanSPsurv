@@ -9,6 +9,7 @@
 #'   `"split"`.
 #' @param include_intercept Logical; include intercept terms?
 #' @param prob Width of the credible interval (default 0.90).
+#' @param main Plot title.
 #' @param ... Additional arguments passed to [plot.default()].
 #' @return Invisible `NULL`. Called for its side effect.
 #' @export
@@ -95,6 +96,7 @@ plot.stanSPsurv <- function(x, which = c("both", "survival", "split"),
 #' @param labels Optional character vector of curve labels (length
 #'   `nrow(newdata)`).
 #' @param cols Optional colour vector.
+#' @param main Plot title.
 #' @param ... Additional arguments passed to [plot.default()].
 #' @return Invisible matrix of posterior-mean survival values
 #'   (rows = profiles, cols = times).
@@ -163,6 +165,7 @@ plot_survival <- function(object, newdata, times, prob = 0.90,
 #'   to compute covariate means for held-constant variables).
 #' @param n_points Number of points along the covariate range (default 100).
 #' @param prob Width of the credible band (default 0.90).
+#' @param main Plot title.
 #' @param ... Additional arguments passed to [plot.default()].
 #' @return Invisible data frame with columns `x`, `mean`, `lo`, `hi`.
 #' @export

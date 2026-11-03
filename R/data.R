@@ -5,7 +5,7 @@ prepare_spsurv_data <- function(formula, split_formula, data, group = NULL,
   if (!inherits(y, "Surv") || !ncol(y) %in% c(2L, 3L))
     stop("formula must use Surv(time, event) or Surv(t0, time, event).", call. = FALSE)
   mf_z <- stats::model.frame(split_formula, data = data, na.action = stats::na.pass)
-  keep <- stats::complete.cases(mf_y, mf_z)
+  keep <- if (ncol(mf_z) > 0L) stats::complete.cases(mf_y, mf_z) else stats::complete.cases(mf_y)
   if (!is.null(group)) keep <- keep & !is.na(group)
   if (!is.null(spell)) keep <- keep & !is.na(spell)
   if (!all(keep)) {

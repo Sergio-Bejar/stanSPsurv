@@ -24,3 +24,7 @@ analysis/vdem/output/cmdstan/
 inst/stan/pooled_spsurv
 inst/stan/exchangeable_spsurv
 inst/stan/spatial_spsurv
+stanSPsurv.Rcheck
+stanSPsurv_*.tar.gz
+validation/walter/output/_*.rds
+validation/_*
