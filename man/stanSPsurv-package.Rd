@@ -27,5 +27,10 @@ Authors:
   \item Bumba Mukherjee
 }
 
+Other contributors:
+\itemize{
+  \item Emiliano Medina-Aguilera [contributor]
+}
+
 }
 \keyword{internal}

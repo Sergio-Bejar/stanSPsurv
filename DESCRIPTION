@@ -5,7 +5,8 @@ Version: 0.1.0
 Authors@R: c(
     person("Sergio", "Béjar", email = "28761799+Sergio-Bejar@users.noreply.github.com",
            role = c("aut", "cre")),
-    person("Bumba", "Mukherjee", role = "aut")
+    person("Bumba", "Mukherjee", role = "aut"),
+    person("Emiliano", "Medina-Aguilera", role = "ctb")
   )
 Description: Fits Bayesian split-population (cure) survival models with
     Weibull or log-logistic event-time distributions using Stan via
