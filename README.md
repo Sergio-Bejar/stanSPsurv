@@ -167,7 +167,7 @@ Rscript validation/simulation_study.R --reps 5 # quick smoke test
 | Spatial | Weibull | 0.031 | 0.133 | 85–97 % | 0 | 236 |
 | Spatial | Log-logistic | 0.049 | 0.173 | 86–96 % | 0 | 242 |
 
-### Comparison with BayesSPsurv
+### Comparison with `BayesSPsurv`
 
 Head-to-head comparison on the same simulated data
 (50 replications, N = 400, pooled and exchangeable Weibull, shape = 0.75):
