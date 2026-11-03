@@ -23,10 +23,13 @@ Imports:
     stats
 Suggests:
     countrycode,
+    knitr,
     maps,
+    rmarkdown,
     sf,
     testthat (>= 3.0.0),
     survival
+VignetteBuilder: knitr
 Additional_repositories: https://stan-dev.r-universe.dev
 SystemRequirements: CmdStan (https://mc-stan.org/users/interfaces/cmdstan)
 Config/testthat/edition: 3

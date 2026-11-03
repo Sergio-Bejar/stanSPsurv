@@ -1,0 +1,287 @@
+---
+title: "Getting started with stanSPsurv"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with stanSPsurv}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Overview
+
+`stanSPsurv` fits Bayesian split-population (cure) survival models using
+Stan.
+In a standard survival model every unit is at risk of experiencing the
+event.
+Split-population models relax that assumption: a latent mixture separates
+units that are *susceptible* to the event from those that are *immune*
+(cured).
+The package estimates both stages jointly---the probability of
+susceptibility and the duration until the event---while optionally
+accounting for group-level or spatial heterogeneity through frailties.
+
+Three model families are available:
+
+| Function | Structure | Frailties |
+|---|---|---|
+| `stan_pooled_spsurv()` | Pooled | None |
+| `stan_exchange_spsurv()` | Exchangeable | iid normal per group |
+| `stan_spatial_spsurv()` | Spatial CAR | BYM2 proper-CAR per area |
+
+Each supports Weibull or log-logistic baseline hazards and both
+`Surv(time, event)` and counting-process `Surv(t0, time, event)` responses.
+
+## Installation
+
+`stanSPsurv` requires a working CmdStan installation.
+Install CmdStan once via `cmdstanr`:
+
+```{r install-cmdstan, eval = FALSE}
+install.packages("cmdstanr", repos = c("https://stan-dev.r-universe.dev",
+                                        getOption("repos")))
+cmdstanr::install_cmdstan()
+```
+
+Then install `stanSPsurv` from GitHub:
+
+```{r install-pkg, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("Sergio-Bejar/stanSPsurv")
+```
+
+## Pooled model
+
+The simplest specification has no group-level heterogeneity.
+We use the `lung` dataset from the `survival` package as a quick
+illustration.
+
+```{r pooled, eval = FALSE}
+library(survival)
+library(stanSPsurv)
+
+data(lung)
+lung <- na.omit(lung[, c("time", "status", "age", "sex")])
+
+fit_pooled <- stan_pooled_spsurv(
+  formula        = Surv(time, status) ~ age + sex,
+  split_formula  = ~ age + sex,
+  data           = lung,
+  form           = "weibull",
+  chains         = 4,
+  parallel_chains = 4,
+  iter_warmup    = 500,
+  iter_sampling  = 500,
+  seed           = 123
+)
+```
+
+### Inspecting results
+
+```{r pooled-results, eval = FALSE}
+# Posterior summaries for all parameters
+summary(fit_pooled)
+
+# Survival-stage coefficients only
+coef(fit_pooled, component = "survival")
+
+# Split-stage coefficients only
+coef(fit_pooled, component = "split")
+```
+
+### Coefficient plot
+
+`plot()` produces a forest plot of posterior means and 90 % credible
+intervals for both stages, omitting intercepts by default:
+
+```{r coef-plot, eval = FALSE, fig.width = 6, fig.height = 3.5}
+plot(fit_pooled)
+```
+
+### Survival curves
+
+`plot_survival()` draws posterior-mean survival curves with pointwise
+credible bands for one or more covariate profiles:
+
+```{r surv-curves, eval = FALSE, fig.width = 7, fig.height = 4.5}
+profiles <- data.frame(age = c(50, 65, 80), sex = 1)
+
+plot_survival(
+  fit_pooled,
+  newdata = profiles,
+  times   = seq(1, 1000, length.out = 100),
+  labels  = c("Age 50", "Age 65", "Age 80"),
+  cols    = c("steelblue", "grey30", "firebrick")
+)
+```
+
+### Susceptibility curve
+
+`plot_susceptibility()` shows how the posterior-mean probability of being
+susceptible varies with one covariate, holding the others at their sample
+means:
+
+```{r suscept, eval = FALSE, fig.width = 6, fig.height = 4}
+plot_susceptibility(fit_pooled, variable = "age", data = lung)
+```
+
+### Prediction
+
+`predict()` returns posterior-mean susceptibility probabilities or
+survival probabilities for new covariate profiles:
+
+```{r predict, eval = FALSE}
+# Susceptibility
+predict(fit_pooled, newdata = profiles, type = "susceptibility")
+
+# Survival at specific times
+predict(fit_pooled, newdata = profiles, type = "survival",
+        times = c(100, 365, 730))
+```
+
+## Exchangeable-frailty model
+
+When observations are grouped (e.g., by country, hospital, or region),
+the exchangeable specification adds iid normal frailties for both the
+survival and split stages:
+
+```{r exchange, eval = FALSE}
+lung$inst <- factor(lung$inst)
+
+fit_exch <- stan_exchange_spsurv(
+  formula        = Surv(time, status) ~ age + sex,
+  split_formula  = ~ age,
+  data           = lung,
+  group          = inst,
+  form           = "weibull",
+  chains         = 4,
+  parallel_chains = 4,
+  iter_warmup    = 500,
+  iter_sampling  = 500,
+  seed           = 123
+)
+```
+
+### Frailty extraction and plotting
+
+```{r frailty, eval = FALSE}
+# Posterior summaries of group-level effects
+frailty(fit_exch, stage = "survival")
+frailty(fit_exch, stage = "split")
+```
+
+`plot_frailty()` produces a caterpillar plot of the frailties ordered by
+posterior mean.
+Groups whose 90 % interval excludes zero are coloured:
+
+```{r frailty-plot, eval = FALSE, fig.width = 6, fig.height = 5}
+plot_frailty(fit_exch, stage = "survival")
+```
+
+## Spatial CAR model
+
+For areal data with a known neighbourhood structure, the spatial
+specification uses a scaled proper-CAR (BYM2) prior.
+You supply a symmetric binary adjacency matrix:
+
+```{r spatial, eval = FALSE}
+# Example with simulated data and 6 regions on a chain graph
+N <- 300; J <- 6
+d <- data.frame(
+  time  = rexp(N),
+  event = rbinom(N, 1, 0.6),
+  x     = rnorm(N),
+  area  = factor(rep(1:J, length.out = N))
+)
+
+A <- matrix(0, J, J)
+for (j in 1:(J - 1)) { A[j, j + 1] <- 1; A[j + 1, j] <- 1 }
+
+fit_sp <- stan_spatial_spsurv(
+  formula        = Surv(time, event) ~ x,
+  split_formula  = ~ x,
+  data           = d,
+  area           = area,
+  adjacency      = A,
+  form           = "weibull",
+  chains         = 4,
+  parallel_chains = 4,
+  iter_warmup    = 500,
+  iter_sampling  = 500,
+  seed           = 123
+)
+```
+
+### Choropleth map
+
+`plot_choropleth()` maps posterior-mean frailties onto a world map using
+the `maps` package.
+Pass a character vector of region names matching the `maps::map("world")`
+database:
+
+```{r choropleth, eval = FALSE, fig.width = 8, fig.height = 5}
+plot_choropleth(fit_sp, stage = "survival",
+                regions = c("Colombia", "Venezuela", "Ecuador",
+                            "Peru", "Bolivia", "Brazil"))
+```
+
+For arbitrary spatial geometries (municipalities, districts), use the
+`sf` back-end instead:
+
+```{r choropleth-sf, eval = FALSE}
+plot_choropleth(fit_sp, stage = "survival",
+                sf_map = my_sf_object, sf_key = "region_id")
+```
+
+## Counting-process responses
+
+For time-varying covariates in panel data, use the counting-process
+format `Surv(t0, time, event)` together with the `spell` argument.
+Each row represents one interval within a spell; the model evaluates
+susceptibility once per spell:
+
+```{r counting-process, eval = FALSE}
+fit_cp <- stan_pooled_spsurv(
+  formula        = Surv(t0, duration, failure) ~ x1 + x2,
+  split_formula  = ~ z1,
+  data           = panel_data,
+  spell          = panel_data$spell_id,
+  form           = "weibull",
+  chains         = 4,
+  parallel_chains = 4
+)
+```
+
+Split-formula covariates must be constant within each spell.
+
+## Diagnostics
+
+The underlying CmdStan fit is accessible via `fit$fit`, which exposes
+all standard CmdStan diagnostics:
+
+```{r diagnostics, eval = FALSE}
+# Divergences and treedepth
+fit_pooled$fit$diagnostic_summary()
+
+# Trace plots (requires bayesplot)
+# bayesplot::mcmc_trace(fit_pooled$fit$draws("beta"))
+
+# LOO-CV (requires loo)
+# loo::loo(fit_pooled$fit$draws("log_lik"))
+```
+
+## Further reading
+
+- Bolte, Huynh, Mukherjee, Béjar, and Schmidt (2021). "BayesSPsurv:
+  An R Package to Estimate Bayesian (Spatial) Split-Population Survival
+  Models." *The R Journal*, 13(1), 595--613.
+  doi: [10.32614/RJ-2021-068](https://doi.org/10.32614/RJ-2021-068)
+- Stan Development Team.
+  [CmdStan User's Guide](https://mc-stan.org/users/interfaces/cmdstan).
