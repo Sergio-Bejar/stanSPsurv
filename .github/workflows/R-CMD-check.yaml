@@ -33,12 +33,15 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
+      - name: Set up r-universe repo for cmdstanr
+        run: |
+          cat('options(repos = c("stan-dev" = "https://stan-dev.r-universe.dev", getOption("repos")))\n',
+              file = "~/.Rprofile", append = TRUE)
+        shell: Rscript {0}
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
-          pak-version: devel
-        env:
-          PKG_CONFIG_KNOWN_REPOS: 'stan-dev=https://stan-dev.r-universe.dev'
 
       - name: Install CmdStan
         run: |
