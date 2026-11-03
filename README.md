@@ -22,7 +22,7 @@ unit is *susceptible* to the event, and a duration model for *how long*
 susceptible units survive before the event occurs.
 
 `stanSPsurv` fits Bayesian split-population (cure) survival models
-using [Stan](https://mc-stan.org) via `cmdstanr`. It builds on [BayesSPsurv](https://github.com/Sergio-Bejar/BayesSPsurv)
+using [Stan](https://mc-stan.org) via `cmdstanr`. It builds on [`BayesSPsurv`](https://github.com/Sergio-Bejar/BayesSPsurv)
 (Bolte et al., 2021), but, by replacing the hand-coded MCMC sampler (slice
 sampling and Metropolis-Hastings in C++) with Stan's Hamiltonian Monte
 Carlo (HMC). This has two advantages. First, HMC explores
