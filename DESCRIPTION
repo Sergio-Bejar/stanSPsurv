@@ -3,7 +3,7 @@ Type: Package
 Title: Bayesian Split-Population Survival Models with Stan
 Version: 0.1.0
 Authors@R: c(
-    person("Sergio", "Béjar", email = "28761799+Sergio-Bejar@users.noreply.github.com",
+    person("Sergio", "Béjar", email = "sergio.bejar@cide.edu",
            role = c("aut", "cre")),
     person("Bumba", "Mukherjee", role = "aut"),
     person("Emiliano", "Medina-Aguilera", role = "ctb")

@@ -19,11 +19,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Sergio Béjar \email{28761799+Sergio-Bejar@users.noreply.github.com}
+\strong{Maintainer}: Sergio Béjar \email{sergio.bejar@cide.edu}
 
 Authors:
 \itemize{
-  \item Sergio Béjar \email{28761799+Sergio-Bejar@users.noreply.github.com}
+  \item Sergio Béjar \email{sergio.bejar@cide.edu}
   \item Bumba Mukherjee
 }
 
