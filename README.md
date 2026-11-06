@@ -198,7 +198,7 @@ divergences. See [`validation/walter`](validation/walter).
 citation("stanSPsurv")
 ```
 
-> Béjar S, Mukherjee B (2026). *stanSPsurv: Bayesian Split-Population
+> Béjar S, Mukherjee B, Medina-Aguilera E (2026). *stanSPsurv: Bayesian Split-Population
 > Survival Models with Stan*. R package version 0.1.0.
 
 ## Authors
