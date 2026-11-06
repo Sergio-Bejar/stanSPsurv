@@ -2,6 +2,7 @@
 ^\.cmdstan$
 ^\.git$
 ^\.gitignore$
+^\.github$
 ^validation$
 ^analysis$
 ^stanSPsurv_.*\.tar\.gz$
